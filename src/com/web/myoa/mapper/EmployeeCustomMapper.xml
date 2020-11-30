@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.myoa.mapper.EmployeeCustomMapper" >
+  <select id="findUserList" resultType="com.web.myoa.pojo.EmployeeCustom">
+	SELECT 
+	    e.*,
+	    e2.name managerName,
+	    s1.sys_role_id roleId,
+	    s2.name roleName
+	FROM employee e
+	    INNER JOIN employee e2 ON e.manager_id = e2.id
+	    INNER JOIN sys_user_role s1 ON s1.sys_user_id = e.name
+	    INNER JOIN sys_role s2 ON s2.id = s1.sys_role_id
+  </select>
+  <!-- 查询角色对应的权限信息 -->
+  <resultMap type="com.web.myoa.pojo.RolePermissionCustom" id="roleAndPermission">
+  	<result column="roleName" property="roleName"/>
+  	<collection property="permissionList" ofType="com.web.myoa.pojo.SysPermission" >
+  		<id column="id" property="id" jdbcType="BIGINT" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="url" property="url" jdbcType="VARCHAR" />
+	    <result column="percode" property="percode" jdbcType="VARCHAR" />
+	    <result column="parentid" property="parentid" jdbcType="BIGINT" />
+	    <result column="parentids" property="parentids" jdbcType="VARCHAR" />
+	    <result column="sortstring" property="sortstring" jdbcType="VARCHAR" />
+	    <result column="available" property="available" jdbcType="CHAR" />
+  	</collection>
+  </resultMap>
+  <select id="findPermissionByRoleId" resultMap="roleAndPermission" parameterType="java.lang.String">
+<!-- 		SELECT  -->
+<!-- 		    role.name roleName, -->
+<!-- 		    pe.* -->
+<!-- 		FROM sys_role role -->
+<!-- 		    INNER JOIN sys_role_permission rp ON role.id = rp.sys_role_id -->
+<!-- 		    INNER JOIN sys_permission pe ON rp.sys_permission_id = pe.id -->
+<!-- 		WHERE role.id = #{roleId} -->
+			SELECT 
+			    r.name roleName,
+			    p.*
+			FROM employee e
+			    INNER JOIN sys_user_role ur ON ur.sys_user_id = e.name
+			    INNER JOIN sys_role r ON r.id = ur.sys_role_id
+			    INNER JOIN sys_role_permission rp ON rp.sys_role_id = r.id
+			    INNER JOIN sys_permission p ON p.id = rp.sys_permission_id
+			WHERE e.id = #{roleId}
+  </select>
+</mapper>

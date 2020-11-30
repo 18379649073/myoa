@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.myoa.mapper.MyManagerMapper" >
+	<select id="findMyManager" resultType="com.web.myoa.pojo.Employee" parameterType="java.lang.Long">
+		SELECT * FROM employee WHERE id = (SELECT manager_id FROM employee WHERE id = #{userId})
+	</select>
+</mapper>
